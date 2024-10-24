@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Tangkap Bola Buatan dabithabile</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        #gameCanvas {
+            border: 2px solid #000;
+            background-color: #d3e0ea;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set up game variables
+        let basketX = canvas.width / 2 - 30;
+        const basketWidth = 60;
+        const basketHeight = 10;
+        const basketSpeed = 20;
+
+        let ballX = Math.random() * (canvas.width - 20) + 10;
+        let ballY = 0;
+        const ballRadius = 10;
+        let ballSpeed = 3;
+
+        let score = 0;
+
+        // Draw basket
+        function drawBasket() {
+            ctx.fillStyle = '#1e6091';
+            ctx.fillRect(basketX, canvas.height - basketHeight - 20, basketWidth, basketHeight);
+        }
+
+        // Draw ball
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+            ctx.fillStyle = '#f94144';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        // Draw score
+        function drawScore() {
+            ctx.font = '16px Arial';
+            ctx.fillStyle = '#000';
+            ctx.fillText('Skor: ' + score, 10, 20);
+        }
+
+        // Move the basket
+        function moveBasket(direction) {
+            if (direction === 'left' && basketX > 0) {
+                basketX -= basketSpeed;
+            } else if (direction === 'right' && basketX < canvas.width - basketWidth) {
+                basketX += basketSpeed;
+            }
+        }
+
+        // Update ball position
+        function updateBall() {
+            ballY += ballSpeed;
+
+            // Check if the ball hits the basket
+            if (ballY + ballRadius > canvas.height - basketHeight - 20 &&
+                ballX > basketX &&
+                ballX < basketX + basketWidth) {
+                ballY = 0;
+                ballX = Math.random() * (canvas.width - 20) + 10;
+                score++;
+                ballSpeed += 0.5; // Increase the ball speed gradually
+            }
+
+            // Check if the ball falls out of the canvas
+            if (ballY - ballRadius > canvas.height) {
+                alert('Game Over! Skor Anda: ' + score);
+                document.location.reload();
+            }
+        }
+
+        // Game loop
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawBasket();
+            drawBall();
+            drawScore();
+            updateBall();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Handle keyboard input
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                moveBasket('left');
+            } else if (e.key === 'ArrowRight') {
+                moveBasket('right');
+            }
+        });
+
+        // Start the game
+        gameLoop();
+    </script>
+</body>
+</html>
